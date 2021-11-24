@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLName;
 import com.liferay.portal.vulcan.util.ObjectMapperUtil;
@@ -287,7 +288,10 @@ public class ${schemaName} <#if dtoParentClassName?has_content>extends ${dtoPare
 				<#if allSchemas[propertyType]??>
 					sb.append(String.valueOf(${propertyName}));
 				<#elseif stringUtil.equals(propertyType, "Object")>
-					if (${propertyName} instanceof String) {
+					if (${propertyName} instanceof Map) {
+						sb.append(JSONFactoryUtil.createJSONObject((Map<?, ?>)${propertyName}));
+					}
+					else if (${propertyName} instanceof String) {
 						sb.append("\"");
 						sb.append((String)${propertyName});
 						sb.append("\"");

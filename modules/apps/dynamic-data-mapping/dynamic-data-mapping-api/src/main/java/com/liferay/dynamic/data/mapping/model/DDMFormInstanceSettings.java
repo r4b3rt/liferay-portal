@@ -31,6 +31,7 @@ import org.osgi.annotation.versioning.ProviderType;
 	rules = {
 		@DDMFormRule(
 			actions = {
+				"setEnabled('expirationDate', NOT(getValue('neverExpire')))",
 				"setVisible('emailFromAddress', getValue('sendEmailNotification'))",
 				"setVisible('emailFromName', getValue('sendEmailNotification'))",
 				"setVisible('emailSubject', getValue('sendEmailNotification'))",
@@ -101,7 +102,8 @@ import org.osgi.annotation.versioning.ProviderType;
 							size = 12,
 							value = {
 								"showPartialResultsToRespondents",
-								"limitToOneSubmissionPerUser"
+								"limitToOneSubmissionPerUser", "expirationDate",
+								"neverExpire"
 							}
 						)
 					}
@@ -140,10 +142,24 @@ public interface DDMFormInstanceSettings {
 	public String emailToAddress();
 
 	@DDMFormField(
+		label = "%expiration-date", type = "date",
+		validationErrorMessage = "%please-enter-a-valid-expiration-date-only-future-dates-are-accepted",
+		validationExpression = "futureDates(expirationDate, \"{parameter}\")",
+		validationExpressionName = "futureDates",
+		validationParameter = "{\"startsFrom\": {\"type\": \"responseDate\"}}"
+	)
+	public String expirationDate();
+
+	@DDMFormField(
 		label = "%limit-to-one-submission-per-user",
 		tip = "%respondents-will-be-required-to-sign-in", type = "checkbox"
 	)
 	public boolean limitToOneSubmissionPerUser();
+
+	@DDMFormField(
+		label = "%never-expire", predefinedValue = "true", type = "checkbox"
+	)
+	public boolean neverExpire();
 
 	@DDMFormField(
 		label = "%select-object",
